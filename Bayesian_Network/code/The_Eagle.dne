@@ -1,0 +1,614 @@
+// ~->[DNET-1]->~
+
+// File created by GmytrasiewiczP_2 at UIC using Netica 5.24 on Mar 08, 2019 at 01:44:41 UTC.
+
+bnet Megamind {
+AutoCompile = TRUE;
+autoupdate = TRUE;
+whenchanged = 1552009462;
+
+visual V1 {
+	defdispform = BELIEFBARS;
+	nodelabeling = TITLE;
+	NodeMaxNumEntries = 50;
+	nodefont = font {shape= "Arial"; size= 9;};
+	linkfont = font {shape= "Arial"; size= 9;};
+	windowposn = (77, 47, 975, 396);
+	resolution = 72;
+	magnification = 0.800854;
+	drawingbounds = (3470, 1626);
+	showpagebreaks = FALSE;
+	usegrid = TRUE;
+	gridspace = (6, 6);
+	NodeSet Node {BuiltIn = 1; Color = 0x00e1e1e1;};
+	NodeSet Nature {BuiltIn = 1; Color = 0x00f8eed2;};
+	NodeSet Deterministic {BuiltIn = 1; Color = 0x00d3caa6;};
+	NodeSet Finding {BuiltIn = 1; Color = 0x00c8c8c8;};
+	NodeSet Constant {BuiltIn = 1; Color = 0x00ffffff;};
+	NodeSet ConstantValue {BuiltIn = 1; Color = 0x00ffffb4;};
+	NodeSet Utility {BuiltIn = 1; Color = 0x00ffbdbd;};
+	NodeSet Decision {BuiltIn = 1; Color = 0x00dee8ff;};
+	NodeSet Documentation {BuiltIn = 1; Color = 0x00f0fafa;};
+	NodeSet Title {BuiltIn = 1; Color = 0x00ffffff;};
+	PrinterSetting A {
+		margins = (1270, 1270, 1270, 1270);
+		};
+	};
+
+node Industry {
+	kind = NATURE;
+	discrete = TRUE;
+	chance = CHANCE;
+	states = (Technology, Financial, Agriculture, Education, Telecom, Other);
+	parents = ();
+	probs = 
+		// Technology   Financial    Agriculture  Education    Telecom      Other        
+		  (0.25,        0.3,         0.25,        0.05,        0.1,         0.05);
+	whenchanged = 1552009459;
+	belief = (0.25, 0.3, 0.25, 0.05, 0.1, 0.05);
+	visual V1 {
+		center = (186, 60);
+		height = 10;
+		};
+	};
+
+node NumberOfYearsInBusiness {
+	kind = NATURE;
+	discrete = TRUE;
+	chance = CHANCE;
+	states = (AboveFifteenYears, EightToFifteenYears);
+	parents = ();
+	probs = 
+		// AboveFifteenYear EightToFifteenYe 
+		  (0.6,         0.4);
+	whenchanged = 1552009462;
+	belief = (0.6, 0.4);
+	visual V1 {
+		center = (516, 78);
+		height = 1;
+		};
+	};
+
+node CompanyQuality {
+	kind = NATURE;
+	discrete = TRUE;
+	states = (Poor, Good);
+	parents = (Industry, NumberOfYearsInBusiness);
+	whenchanged = 1551824156;
+	belief = (0.5, 0.5);
+	visual V1 {
+		center = (408, 168);
+		height = 12;
+		link 1 {
+			path = ((281, 105), (356, 142));
+			};
+		};
+	};
+
+node NumberOfDiverseProducts {
+	kind = NATURE;
+	discrete = TRUE;
+	chance = CHANCE;
+	states = (LessThanFive, FiveToTen, MoreThan10);
+	parents = ();
+	probs = 
+		// LessThanFive FiveToTen    MoreThan10   
+		  (0.25,        0.35,        0.4);
+	whenchanged = 1552009427;
+	belief = (0.25, 0.35, 0.4);
+	visual V1 {
+		center = (798, 66);
+		height = 14;
+		};
+	};
+
+node NumberOfCompetitors {
+	kind = NATURE;
+	discrete = TRUE;
+	states = (Below5, Above5);
+	parents = ();
+	whenchanged = 1551825482;
+	belief = (0.5, 0.5);
+	visual V1 {
+		center = (1158, 36);
+		height = 20;
+		};
+	};
+
+node MarketShare {
+	kind = NATURE;
+	discrete = TRUE;
+	chance = CHANCE;
+	states = (High, Medium, Low);
+	parents = (NumberOfCompetitors);
+	probs = 
+		// High         Medium       Low           // NumberOfCompetitors 
+		  (0.25,        0.3,         0.45,         // Below5              
+		   0.25,        0.3,         0.45);        // Above5              ;
+	whenchanged = 1551825487;
+	belief = (0.25, 0.3, 0.45);
+	visual V1 {
+		center = (1038, 132);
+		height = 6;
+		};
+	};
+
+node FinancialStability {
+	kind = NATURE;
+	discrete = TRUE;
+	chance = CHANCE;
+	states = (Yes, No);
+	parents = (CompanyQuality, NumberOfDiverseProducts, MarketShare);
+	probs = 
+		// Yes          No            // CompanyQuality NumberOfDiverseProducts MarketShare 
+		  (0.917002,    0.08299806,   // Poor           LessThanFive            High        
+		   0.3545174,   0.6454826,    // Poor           LessThanFive            Medium      
+		   0.3241758,   0.6758242,    // Poor           LessThanFive            Low         
+		   0.4257967,   0.5742033,    // Poor           FiveToTen               High        
+		   0.4909406,   0.5090594,    // Poor           FiveToTen               Medium      
+		   0.9206184,   0.07938164,   // Poor           FiveToTen               Low         
+		   0.7125338,   0.2874663,    // Poor           MoreThan10              High        
+		   0.2308764,   0.7691236,    // Poor           MoreThan10              Medium      
+		   0.3768214,   0.6231785,    // Poor           MoreThan10              Low         
+		   0.7777774,   0.2222226,    // Good           LessThanFive            High        
+		   0.5830637,   0.4169362,    // Good           LessThanFive            Medium      
+		   0.6133839,   0.3866161,    // Good           LessThanFive            Low         
+		   0.3537943,   0.6462057,    // Good           FiveToTen               High        
+		   0.6203294,   0.3796706,    // Good           FiveToTen               Medium      
+		   0.7776445,   0.2223554,    // Good           FiveToTen               Low         
+		   0.3850625,   0.6149375,    // Good           MoreThan10              High        
+		   0.5041606,   0.4958394,    // Good           MoreThan10              Medium      
+		   0.6802961,   0.3197038);   // Good           MoreThan10              Low         ;
+	whenchanged = 1521739207;
+	belief = (0.5611685, 0.4388315);
+	visual V1 {
+		center = (684, 222);
+		height = 13;
+		};
+	};
+
+node LegalCases {
+	kind = NATURE;
+	discrete = TRUE;
+	chance = CHANCE;
+	states = (Yes, No);
+	parents = ();
+	probs = 
+		// Yes          No           
+		  (0.5625,      0.4375);
+	whenchanged = 1551825645;
+	belief = (0.5625, 0.4375);
+	visual V1 {
+		center = (1206, 312);
+		height = 7;
+		};
+	};
+
+node PublicImage {
+	kind = NATURE;
+	discrete = TRUE;
+	chance = CHANCE;
+	states = (Good, Bad);
+	parents = ();
+	probs = 
+		// Good         Bad          
+		  (0.5,         0.5);
+	whenchanged = 1551825666;
+	belief = (0.5, 0.5);
+	visual V1 {
+		center = (1056, 612);
+		height = 17;
+		};
+	};
+
+node EmployeeSatisfaction {
+	kind = NATURE;
+	discrete = TRUE;
+	states = (Good, Bad);
+	parents = ();
+	whenchanged = 1551825735;
+	belief = (0.5, 0.5);
+	visual V1 {
+		center = (1284, 462);
+		height = 22;
+		};
+	};
+
+node Other {
+	kind = NATURE;
+	discrete = TRUE;
+	states = (Yes, No);
+	parents = (LegalCases, PublicImage, EmployeeSatisfaction);
+	whenchanged = 1551825744;
+	belief = (0.5, 0.5);
+	visual V1 {
+		center = (1014, 468);
+		height = 8;
+		link 2 {
+			path = ((1048, 585), (1021, 496));
+			};
+		};
+	};
+
+node ReceivablesTurnOver {
+	kind = NATURE;
+	discrete = TRUE;
+	chance = CHANCE;
+	states = (High, Low);
+	parents = ();
+	probs = 
+		// High         Low          
+		  (0.5,         0.5);
+	whenchanged = 1551824701;
+	belief = (0.5, 0.5);
+	visual V1 {
+		center = (114, 294);
+		height = 11;
+		};
+	};
+
+node QuickRatio {
+	kind = NATURE;
+	discrete = TRUE;
+	chance = DETERMIN;
+	states = (High, Low);
+	parents = ();
+	functable = 
+		  (High);
+	whenchanged = 1551824792;
+	belief = (1, 0);
+	visual V1 {
+		center = (354, 246);
+		height = 18;
+		};
+	};
+
+node AssetsValue {
+	kind = NATURE;
+	discrete = TRUE;
+	states = (Below100M, Above100M);
+	parents = (ReceivablesTurnOver, QuickRatio);
+	whenchanged = 1551824774;
+	belief = (0.5, 0.5);
+	visual V1 {
+		center = (390, 360);
+		height = 2;
+		link 1 {
+			path = ((188, 311), (299, 338));
+			};
+		};
+	};
+
+node Liabilities {
+	kind = NATURE;
+	discrete = TRUE;
+	chance = CHANCE;
+	states = (Poor, Good);
+	parents = ();
+	probs = 
+		// Poor         Good         
+		  (0.5,         0.5);
+	whenchanged = 1551824817;
+	belief = (0.5, 0.5);
+	visual V1 {
+		center = (1158, 210);
+		height = 4;
+		};
+	};
+
+node CurrentRatio {
+	kind = NATURE;
+	discrete = TRUE;
+	chance = CHANCE;
+	states = (Low, Average, High);
+	parents = (Liabilities);
+	probs = 
+		// Low          Average      High          // Liabilities 
+		  (0.5,         0.3,         0.2,          // Poor        
+		   0.2,         0.3,         0.5);         // Good        ;
+	whenchanged = 1551824513;
+	belief = (0.35, 0.3, 0.35);
+	visual V1 {
+		center = (924, 246);
+		height = 15;
+		};
+	};
+
+node CompanyCreditWorthiness {
+	kind = NATURE;
+	discrete = TRUE;
+	chance = CHANCE;
+	states = (Low, Average, High);
+	parents = (Other, CompanyQuality, AssetsValue, FinancialStability, CurrentRatio);
+	probs = 
+		// Low          Average      High          // Other CompanyQuality AssetsValue FinancialStability CurrentRatio 
+		  (0.2751296,   0.3507795,   0.3740908,    // Yes   Poor           Below100M   Yes                Low          
+		   0.2467055,   0.4602273,   0.2930672,    // Yes   Poor           Below100M   Yes                Average      
+		   0.2733611,   0.3256782,   0.4009608,    // Yes   Poor           Below100M   Yes                High         
+		   0.1087962,   0.1132459,   0.7779579,    // Yes   Poor           Below100M   No                 Low          
+		   0.1161608,   0.6249188,   0.2589205,    // Yes   Poor           Below100M   No                 Average      
+		   0.3976753,   0.3591523,   0.2431725,    // Yes   Poor           Below100M   No                 High         
+		   0.2601488,   0.03603731,  0.7038139,    // Yes   Poor           Above100M   Yes                Low          
+		   0.3218695,   0.3198593,   0.3582712,    // Yes   Poor           Above100M   Yes                Average      
+		   0.2687218,   0.4406057,   0.2906725,    // Yes   Poor           Above100M   Yes                High         
+		   0.01024739,  0.4866152,   0.5031375,    // Yes   Poor           Above100M   No                 Low          
+		   0.4159252,   0.4834282,   0.1006466,    // Yes   Poor           Above100M   No                 Average      
+		   0.2762974,   0.4606176,   0.263085,     // Yes   Poor           Above100M   No                 High         
+		   0.3998635,   0.5789778,   0.02115873,   // Yes   Good           Below100M   Yes                Low          
+		   0.08383039,  0.510112,    0.4060576,    // Yes   Good           Below100M   Yes                Average      
+		   0.1333957,   0.5190032,   0.3476011,    // Yes   Good           Below100M   Yes                High         
+		   0.5006303,   0.1990619,   0.3003079,    // Yes   Good           Below100M   No                 Low          
+		   0.3397405,   0.3892916,   0.2709679,    // Yes   Good           Below100M   No                 Average      
+		   0.3343307,   0.5067248,   0.1589445,    // Yes   Good           Below100M   No                 High         
+		   0.2175516,   0.3938453,   0.3886031,    // Yes   Good           Above100M   Yes                Low          
+		   0.3791339,   0.489823,    0.1310431,    // Yes   Good           Above100M   Yes                Average      
+		   0.3665614,   0.393773,    0.2396655,    // Yes   Good           Above100M   Yes                High         
+		   0.7848747,   0.1340231,   0.08110224,   // Yes   Good           Above100M   No                 Low          
+		   0.1704363,   0.299469,    0.5300947,    // Yes   Good           Above100M   No                 Average      
+		   0.02090066,  0.350483,    0.6286163,    // Yes   Good           Above100M   No                 High         
+		   0.3813477,   0.3226446,   0.2960077,    // No    Poor           Below100M   Yes                Low          
+		   0.2802629,   0.3177887,   0.4019484,    // No    Poor           Below100M   Yes                Average      
+		   0.4781337,   0.4157057,   0.1061606,    // No    Poor           Below100M   Yes                High         
+		   0.3539806,   0.4006775,   0.2453419,    // No    Poor           Below100M   No                 Low          
+		   0.1828595,   0.6164538,   0.2006867,    // No    Poor           Below100M   No                 Average      
+		   0.1469967,   0.4215102,   0.4314932,    // No    Poor           Below100M   No                 High         
+		   0.1897883,   0.4473627,   0.3628491,    // No    Poor           Above100M   Yes                Low          
+		   0.2731407,   0.3168781,   0.4099812,    // No    Poor           Above100M   Yes                Average      
+		   0.3945762,   0.4620953,   0.1433285,    // No    Poor           Above100M   Yes                High         
+		   0.4223578,   0.3979112,   0.1797311,    // No    Poor           Above100M   No                 Low          
+		   0.4408269,   0.005308832, 0.5538642,    // No    Poor           Above100M   No                 Average      
+		   0.08351662,  0.5331073,   0.383376,     // No    Poor           Above100M   No                 High         
+		   0.2536004,   0.3841895,   0.3622101,    // No    Good           Below100M   Yes                Low          
+		   0.3748934,   0.2733789,   0.3517277,    // No    Good           Below100M   Yes                Average      
+		   0.3327395,   0.3240275,   0.3432329,    // No    Good           Below100M   Yes                High         
+		   0.290748,    0.4170614,   0.2921906,    // No    Good           Below100M   No                 Low          
+		   0.2682943,   0.5193526,   0.2123531,    // No    Good           Below100M   No                 Average      
+		   0.4417216,   0.5401855,   0.01809289,   // No    Good           Below100M   No                 High         
+		   0.3006467,   0.4067065,   0.2926468,    // No    Good           Above100M   Yes                Low          
+		   0.3913225,   0.2782328,   0.3304447,    // No    Good           Above100M   Yes                Average      
+		   0.5293348,   0.1756526,   0.2950126,    // No    Good           Above100M   Yes                High         
+		   0.2538724,   0.3474307,   0.398697,     // No    Good           Above100M   No                 Low          
+		   0.3538782,   0.2895144,   0.3566074,    // No    Good           Above100M   No                 Average      
+		   0.05304006,  0.2062327,   0.7407272);   // No    Good           Above100M   No                 High         ;
+	whenchanged = 1552009430;
+	belief = (0.2959158, 0.3771042, 0.3269801);
+	visual V1 {
+		center = (678, 336);
+		height = 5;
+		link 1 {
+			path = ((945, 441), (762, 370));
+			};
+		link 5 {
+			path = ((843, 275), (767, 303));
+			};
+		};
+	};
+
+node LoanReason {
+	kind = NATURE;
+	discrete = TRUE;
+	chance = CHANCE;
+	states = (NewProduct, PayOldLoans, RunDaytoDayExpenses, InvestmentToCompany);
+	parents = ();
+	probs = 
+		// NewProduct   PayOldLoans  RunDaytoDayExpen InvestmentToComp 
+		  (0.1,         0.3,         0.25,        0.35);
+	whenchanged = 1551824930;
+	belief = (0.1, 0.3, 0.25, 0.35);
+	visual V1 {
+		center = (282, 510);
+		height = 19;
+		};
+	};
+
+node TotalCredit {
+	kind = NATURE;
+	discrete = TRUE;
+	chance = CHANCE;
+	states = (Below1M, Below10M, Above10M);
+	parents = ();
+	probs = 
+		// Below1M      Below10M     Above10M     
+		  (0.235,       0.305,       0.46);
+	whenchanged = 1551824981;
+	belief = (0.235, 0.305, 0.46);
+	visual V1 {
+		center = (510, 438);
+		height = 9;
+		};
+	};
+
+node LoanDuration {
+	kind = NATURE;
+	discrete = TRUE;
+	chance = CHANCE;
+	states = (LessThan10years, MoreThan10years);
+	parents = ();
+	probs = 
+		// LessThan10years MoreThan10years 
+		  (0.55,        0.45);
+	whenchanged = 1521739723;
+	belief = (0.55, 0.45);
+	visual V1 {
+		center = (798, 498);
+		height = 16;
+		};
+	};
+
+node InterestCoverageRatio {
+	kind = NATURE;
+	discrete = TRUE;
+	states = (Low, High);
+	parents = ();
+	whenchanged = 1551825512;
+	belief = (0.5, 0.5);
+	visual V1 {
+		center = (252, 678);
+		height = 21;
+		};
+	};
+
+node LoanRepaid {
+	kind = NATURE;
+	discrete = TRUE;
+	chance = CHANCE;
+	states = (Yes, No);
+	parents = (LoanReason, TotalCredit, CompanyCreditWorthiness, LoanDuration, InterestCoverageRatio);
+	probs = 
+		// Yes          No            // LoanReason       TotalCredit CompanyCreditWorthiness LoanDuration    InterestCoverageRatio 
+		  (0.47,        0.53,         // NewProduct       Below1M     Low                     LessThan10years Low                   
+		   0.47,        0.53,         // NewProduct       Below1M     Low                     LessThan10years High                  
+		   0.45,        0.55,         // NewProduct       Below1M     Low                     MoreThan10years Low                   
+		   0.45,        0.55,         // NewProduct       Below1M     Low                     MoreThan10years High                  
+		   0.6,         0.4,          // NewProduct       Below1M     Average                 LessThan10years Low                   
+		   0.6,         0.4,          // NewProduct       Below1M     Average                 LessThan10years High                  
+		   0.58,        0.42,         // NewProduct       Below1M     Average                 MoreThan10years Low                   
+		   0.58,        0.42,         // NewProduct       Below1M     Average                 MoreThan10years High                  
+		   0.8,         0.2,          // NewProduct       Below1M     High                    LessThan10years Low                   
+		   0.8,         0.2,          // NewProduct       Below1M     High                    LessThan10years High                  
+		   0.7,         0.3,          // NewProduct       Below1M     High                    MoreThan10years Low                   
+		   0.7,         0.3,          // NewProduct       Below1M     High                    MoreThan10years High                  
+		   0.45,        0.55,         // NewProduct       Below10M    Low                     LessThan10years Low                   
+		   0.45,        0.55,         // NewProduct       Below10M    Low                     LessThan10years High                  
+		   0.43,        0.57,         // NewProduct       Below10M    Low                     MoreThan10years Low                   
+		   0.43,        0.57,         // NewProduct       Below10M    Low                     MoreThan10years High                  
+		   0.58,        0.42,         // NewProduct       Below10M    Average                 LessThan10years Low                   
+		   0.58,        0.42,         // NewProduct       Below10M    Average                 LessThan10years High                  
+		   0.56,        0.44,         // NewProduct       Below10M    Average                 MoreThan10years Low                   
+		   0.56,        0.44,         // NewProduct       Below10M    Average                 MoreThan10years High                  
+		   0.75,        0.25,         // NewProduct       Below10M    High                    LessThan10years Low                   
+		   0.75,        0.25,         // NewProduct       Below10M    High                    LessThan10years High                  
+		   0.68,        0.32,         // NewProduct       Below10M    High                    MoreThan10years Low                   
+		   0.68,        0.32,         // NewProduct       Below10M    High                    MoreThan10years High                  
+		   0.42,        0.58,         // NewProduct       Above10M    Low                     LessThan10years Low                   
+		   0.42,        0.58,         // NewProduct       Above10M    Low                     LessThan10years High                  
+		   0.55,        0.45,         // NewProduct       Above10M    Low                     MoreThan10years Low                   
+		   0.55,        0.45,         // NewProduct       Above10M    Low                     MoreThan10years High                  
+		   0.5,         0.5,          // NewProduct       Above10M    Average                 LessThan10years Low                   
+		   0.5,         0.5,          // NewProduct       Above10M    Average                 LessThan10years High                  
+		   0.7,         0.3,          // NewProduct       Above10M    Average                 MoreThan10years Low                   
+		   0.7,         0.3,          // NewProduct       Above10M    Average                 MoreThan10years High                  
+		   0.65,        0.35,         // NewProduct       Above10M    High                    LessThan10years Low                   
+		   0.65,        0.35,         // NewProduct       Above10M    High                    LessThan10years High                  
+		   0.8,         0.2,          // NewProduct       Above10M    High                    MoreThan10years Low                   
+		   0.8,         0.2,          // NewProduct       Above10M    High                    MoreThan10years High                  
+		   0.47,        0.53,         // PayOldLoans      Below1M     Low                     LessThan10years Low                   
+		   0.47,        0.53,         // PayOldLoans      Below1M     Low                     LessThan10years High                  
+		   0.45,        0.55,         // PayOldLoans      Below1M     Low                     MoreThan10years Low                   
+		   0.45,        0.55,         // PayOldLoans      Below1M     Low                     MoreThan10years High                  
+		   0.6,         0.4,          // PayOldLoans      Below1M     Average                 LessThan10years Low                   
+		   0.6,         0.4,          // PayOldLoans      Below1M     Average                 LessThan10years High                  
+		   0.58,        0.42,         // PayOldLoans      Below1M     Average                 MoreThan10years Low                   
+		   0.58,        0.42,         // PayOldLoans      Below1M     Average                 MoreThan10years High                  
+		   0.8,         0.2,          // PayOldLoans      Below1M     High                    LessThan10years Low                   
+		   0.8,         0.2,          // PayOldLoans      Below1M     High                    LessThan10years High                  
+		   0.7,         0.3,          // PayOldLoans      Below1M     High                    MoreThan10years Low                   
+		   0.7,         0.3,          // PayOldLoans      Below1M     High                    MoreThan10years High                  
+		   0.45,        0.55,         // PayOldLoans      Below10M    Low                     LessThan10years Low                   
+		   0.45,        0.55,         // PayOldLoans      Below10M    Low                     LessThan10years High                  
+		   0.43,        0.57,         // PayOldLoans      Below10M    Low                     MoreThan10years Low                   
+		   0.43,        0.57,         // PayOldLoans      Below10M    Low                     MoreThan10years High                  
+		   0.58,        0.42,         // PayOldLoans      Below10M    Average                 LessThan10years Low                   
+		   0.58,        0.42,         // PayOldLoans      Below10M    Average                 LessThan10years High                  
+		   0.56,        0.44,         // PayOldLoans      Below10M    Average                 MoreThan10years Low                   
+		   0.56,        0.44,         // PayOldLoans      Below10M    Average                 MoreThan10years High                  
+		   0.75,        0.25,         // PayOldLoans      Below10M    High                    LessThan10years Low                   
+		   0.75,        0.25,         // PayOldLoans      Below10M    High                    LessThan10years High                  
+		   0.68,        0.32,         // PayOldLoans      Below10M    High                    MoreThan10years Low                   
+		   0.68,        0.32,         // PayOldLoans      Below10M    High                    MoreThan10years High                  
+		   0.42,        0.58,         // PayOldLoans      Above10M    Low                     LessThan10years Low                   
+		   0.42,        0.58,         // PayOldLoans      Above10M    Low                     LessThan10years High                  
+		   0.55,        0.45,         // PayOldLoans      Above10M    Low                     MoreThan10years Low                   
+		   0.55,        0.45,         // PayOldLoans      Above10M    Low                     MoreThan10years High                  
+		   0.5,         0.5,          // PayOldLoans      Above10M    Average                 LessThan10years Low                   
+		   0.5,         0.5,          // PayOldLoans      Above10M    Average                 LessThan10years High                  
+		   0.7,         0.3,          // PayOldLoans      Above10M    Average                 MoreThan10years Low                   
+		   0.7,         0.3,          // PayOldLoans      Above10M    Average                 MoreThan10years High                  
+		   0.65,        0.35,         // PayOldLoans      Above10M    High                    LessThan10years Low                   
+		   0.65,        0.35,         // PayOldLoans      Above10M    High                    LessThan10years High                  
+		   0.8,         0.2,          // PayOldLoans      Above10M    High                    MoreThan10years Low                   
+		   0.8,         0.2,          // PayOldLoans      Above10M    High                    MoreThan10years High                  
+		   0.47,        0.53,         // RunDaytoDayExpen Below1M     Low                     LessThan10years Low                   
+		   0.47,        0.53,         // RunDaytoDayExpen Below1M     Low                     LessThan10years High                  
+		   0.45,        0.55,         // RunDaytoDayExpen Below1M     Low                     MoreThan10years Low                   
+		   0.45,        0.55,         // RunDaytoDayExpen Below1M     Low                     MoreThan10years High                  
+		   0.6,         0.4,          // RunDaytoDayExpen Below1M     Average                 LessThan10years Low                   
+		   0.6,         0.4,          // RunDaytoDayExpen Below1M     Average                 LessThan10years High                  
+		   0.58,        0.42,         // RunDaytoDayExpen Below1M     Average                 MoreThan10years Low                   
+		   0.58,        0.42,         // RunDaytoDayExpen Below1M     Average                 MoreThan10years High                  
+		   0.8,         0.2,          // RunDaytoDayExpen Below1M     High                    LessThan10years Low                   
+		   0.8,         0.2,          // RunDaytoDayExpen Below1M     High                    LessThan10years High                  
+		   0.7,         0.3,          // RunDaytoDayExpen Below1M     High                    MoreThan10years Low                   
+		   0.7,         0.3,          // RunDaytoDayExpen Below1M     High                    MoreThan10years High                  
+		   0.45,        0.55,         // RunDaytoDayExpen Below10M    Low                     LessThan10years Low                   
+		   0.45,        0.55,         // RunDaytoDayExpen Below10M    Low                     LessThan10years High                  
+		   0.6,         0.4,          // RunDaytoDayExpen Below10M    Low                     MoreThan10years Low                   
+		   0.6,         0.4,          // RunDaytoDayExpen Below10M    Low                     MoreThan10years High                  
+		   0.58,        0.42,         // RunDaytoDayExpen Below10M    Average                 LessThan10years Low                   
+		   0.58,        0.42,         // RunDaytoDayExpen Below10M    Average                 LessThan10years High                  
+		   0.8,         0.2,          // RunDaytoDayExpen Below10M    Average                 MoreThan10years Low                   
+		   0.8,         0.2,          // RunDaytoDayExpen Below10M    Average                 MoreThan10years High                  
+		   0.7,         0.3,          // RunDaytoDayExpen Below10M    High                    LessThan10years Low                   
+		   0.7,         0.3,          // RunDaytoDayExpen Below10M    High                    LessThan10years High                  
+		   0.45,        0.55,         // RunDaytoDayExpen Below10M    High                    MoreThan10years Low                   
+		   0.45,        0.55,         // RunDaytoDayExpen Below10M    High                    MoreThan10years High                  
+		   0.43,        0.57,         // RunDaytoDayExpen Above10M    Low                     LessThan10years Low                   
+		   0.43,        0.57,         // RunDaytoDayExpen Above10M    Low                     LessThan10years High                  
+		   0.58,        0.42,         // RunDaytoDayExpen Above10M    Low                     MoreThan10years Low                   
+		   0.58,        0.42,         // RunDaytoDayExpen Above10M    Low                     MoreThan10years High                  
+		   0.56,        0.44,         // RunDaytoDayExpen Above10M    Average                 LessThan10years Low                   
+		   0.56,        0.44,         // RunDaytoDayExpen Above10M    Average                 LessThan10years High                  
+		   0.75,        0.25,         // RunDaytoDayExpen Above10M    Average                 MoreThan10years Low                   
+		   0.75,        0.25,         // RunDaytoDayExpen Above10M    Average                 MoreThan10years High                  
+		   0.68,        0.32,         // RunDaytoDayExpen Above10M    High                    LessThan10years Low                   
+		   0.68,        0.32,         // RunDaytoDayExpen Above10M    High                    LessThan10years High                  
+		   0.42,        0.58,         // RunDaytoDayExpen Above10M    High                    MoreThan10years Low                   
+		   0.42,        0.58,         // RunDaytoDayExpen Above10M    High                    MoreThan10years High                  
+		   0.55,        0.45,         // InvestmentToComp Below1M     Low                     LessThan10years Low                   
+		   0.55,        0.45,         // InvestmentToComp Below1M     Low                     LessThan10years High                  
+		   0.5,         0.5,          // InvestmentToComp Below1M     Low                     MoreThan10years Low                   
+		   0.5,         0.5,          // InvestmentToComp Below1M     Low                     MoreThan10years High                  
+		   0.7,         0.3,          // InvestmentToComp Below1M     Average                 LessThan10years Low                   
+		   0.7,         0.3,          // InvestmentToComp Below1M     Average                 LessThan10years High                  
+		   0.65,        0.35,         // InvestmentToComp Below1M     Average                 MoreThan10years Low                   
+		   0.65,        0.35,         // InvestmentToComp Below1M     Average                 MoreThan10years High                  
+		   0.8,         0.2,          // InvestmentToComp Below1M     High                    LessThan10years Low                   
+		   0.8,         0.2,          // InvestmentToComp Below1M     High                    LessThan10years High                  
+		   0.47,        0.53,         // InvestmentToComp Below1M     High                    MoreThan10years Low                   
+		   0.47,        0.53,         // InvestmentToComp Below1M     High                    MoreThan10years High                  
+		   0.45,        0.55,         // InvestmentToComp Below10M    Low                     LessThan10years Low                   
+		   0.45,        0.55,         // InvestmentToComp Below10M    Low                     LessThan10years High                  
+		   0.6,         0.4,          // InvestmentToComp Below10M    Low                     MoreThan10years Low                   
+		   0.6,         0.4,          // InvestmentToComp Below10M    Low                     MoreThan10years High                  
+		   0.58,        0.42,         // InvestmentToComp Below10M    Average                 LessThan10years Low                   
+		   0.58,        0.42,         // InvestmentToComp Below10M    Average                 LessThan10years High                  
+		   0.8,         0.2,          // InvestmentToComp Below10M    Average                 MoreThan10years Low                   
+		   0.8,         0.2,          // InvestmentToComp Below10M    Average                 MoreThan10years High                  
+		   0.7,         0.3,          // InvestmentToComp Below10M    High                    LessThan10years Low                   
+		   0.7,         0.3,          // InvestmentToComp Below10M    High                    LessThan10years High                  
+		   0.45,        0.55,         // InvestmentToComp Below10M    High                    MoreThan10years Low                   
+		   0.45,        0.55,         // InvestmentToComp Below10M    High                    MoreThan10years High                  
+		   0.6,         0.4,          // InvestmentToComp Above10M    Low                     LessThan10years Low                   
+		   0.6,         0.4,          // InvestmentToComp Above10M    Low                     LessThan10years High                  
+		   0.58,        0.42,         // InvestmentToComp Above10M    Low                     MoreThan10years Low                   
+		   0.58,        0.42,         // InvestmentToComp Above10M    Low                     MoreThan10years High                  
+		   0.8,         0.2,          // InvestmentToComp Above10M    Average                 LessThan10years Low                   
+		   0.8,         0.2,          // InvestmentToComp Above10M    Average                 LessThan10years High                  
+		   0.7,         0.3,          // InvestmentToComp Above10M    Average                 MoreThan10years Low                   
+		   0.7,         0.3,          // InvestmentToComp Above10M    Average                 MoreThan10years High                  
+		   0.45,        0.55,         // InvestmentToComp Above10M    High                    LessThan10years Low                   
+		   0.45,        0.55,         // InvestmentToComp Above10M    High                    LessThan10years High                  
+		   0.35,        0.65,         // InvestmentToComp Above10M    High                    MoreThan10years Low                   
+		   0.35,        0.65);        // InvestmentToComp Above10M    High                    MoreThan10years High                  ;
+	whenchanged = 1551825527;
+	belief = (0.5964236, 0.4035764);
+	visual V1 {
+		center = (624, 600);
+		height = 3;
+		link 4 {
+			path = ((754, 525), (669, 574));
+			};
+		};
+	};
+ElimOrder = (NumberOfCompetitors, Liabilities, ReceivablesTurnOver, QuickRatio, LegalCases, PublicImage, EmployeeSatisfaction, Industry, NumberOfYearsInBusiness, NumberOfDiverseProducts, MarketShare, CompanyQuality, FinancialStability, Other, AssetsValue, CurrentRatio, LoanReason, LoanDuration, InterestCoverageRatio, LoanRepaid, CompanyCreditWorthiness, TotalCredit);
+};
